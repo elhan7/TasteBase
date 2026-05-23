@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TasteBase - Рецепты</title>
+
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f9; 
+            padding: 20px;
+            color: #333;
+        }
+
+       
+        .recipe-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #f97316;
+        }
+
+        
+        button {
+            background-color: #f97316;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer; 
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        
+        button:hover {
+            background-color: #ea580c; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Моя книга рецептов TasteBase</h1>
+    
+    <button onclick="loadRecipes()">Показать все рецепты</button>
+    <button onclick="loadRandom()">Случайный ужин</button>
+
+    <div id="content"></div>
+
+    <script>
+      
+        async function loadRecipes() {
+            try {
+               
+                const response = await fetch('http://localhost:8080/recipes');
+                
+               
+                const data = await response.json();
+                
+                
+                document.getElementById('content').innerHTML = data.map(recipe => `
+                    <div class="recipe-card">
+                        <h3>${recipe.title}</h3>
+                        <p><strong>Ингредиенты:</strong> ${recipe.ingredients.join(', ')}</p>
+                        <p><strong>Инструкция:</strong> ${recipe.instruction}</p>
+                    </div>
+                `).join('');
+            } catch (e) {
+                
+                document.getElementById('content').innerHTML = '<p style="color:red;">Ошибка! Сервер выключен.</p>';
+            }
+        }
+
+      
+        async function loadRandom() {
+            try {
+                const response = await fetch('http://localhost:8080/recipes/random');
+                const data = await response.json();
+                
+                
+                document.getElementById('content').innerHTML = `
+                    <div class="recipe-card" style="border-left-color: #22c55e;">
+                        <h3>🎲 ${data.title}</h3>
+                        <p><strong>Ингредиенты:</strong> ${data.ingredients.join(', ')}</p>
+                        <p><strong>Инструкция:</strong> ${data.instruction}</p>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('content').innerHTML = '<p style="color:red;">Ошибка! Сервер выключен.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
